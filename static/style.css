@@ -1,0 +1,148 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 40px; /* Increased padding for more space */
+    background-color: #ffffff; /* White background */
+    color: #202124; /* Dark grey text */
+}
+
+.container {
+    max-width: 100%; /* Take full page width */
+    margin: 0 auto; /* Center with no vertical margin */
+    background-color: #fff;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* More pronounced shadow */
+}
+
+.header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 30px;
+}
+
+
+.header h1 {
+    margin: 0;
+    color: #4285f4; /* Google blue */
+    font-size: 48px; /* Larger title */
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.search-box {
+    display: flex;
+    margin-bottom: 30px;
+}
+
+.search-input-wrapper {
+    display: flex;
+    align-items: center;
+    border: 1px solid #dfe1e5;
+    border-radius: 24px;
+    height: 60px; /* Increased height to match input and provide more visual space */
+    margin: 0 auto; /* Center the search box */
+    max-width: 100%; /* Take full width of container */
+    box-shadow: none;
+    transition: box-shadow 0.3s ease;
+}
+
+.search-input-wrapper:hover {
+    box-shadow: 0 1px 6px rgba(32,33,36,.28);
+}
+
+.search-input-wrapper:focus-within {
+    box-shadow: 0 1px 6px rgba(32,33,36,.28);
+    border-color: transparent; /* Remove border on focus */
+}
+
+.search-icon {
+    padding: 0 15px; /* Adjusted padding */
+    color: #9aa0a6; /* Grey icon color */
+    font-size: 24px; /* Increased icon size */
+}
+
+#search-input {
+    flex-grow: 1;
+    padding: 0 15px; /* Add horizontal padding */
+    border: none; /* Remove border */
+    background: transparent;
+    font-size: 22px; /* Further increased font size */
+    height: 100%; /* Make input take full height of wrapper */
+    outline: none;
+    color: #202124;
+}
+
+
+/* Removed search button styling as it's no longer present */
+
+/* Removed icon button styling as it's no longer present */
+
+.search-result {
+    background-color: #f9f9f9;
+    border: 1px solid #eee;
+    padding: 15px;
+    margin-bottom: 15px;
+    border-radius: 5px;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.search-result:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.search-result h2 {
+    margin-top: 0;
+    margin-bottom: 10px;
+    font-size: 20px;
+}
+
+.search-result h2 a {
+    color: #007bff;
+    text-decoration: none;
+}
+
+.search-result h2 a:hover {
+    text-decoration: underline;
+}
+
+.search-result p {
+    font-size: 14px;
+    line-height: 1.6;
+    color: #555;
+}
+
+.search-result .url {
+    font-size: 12px;
+    color: #006400; /* Dark green for URLs */
+    word-break: break-all;
+}
+
+/* Updated styling for a more appealing UI */
+.search-result {
+    border-left: 5px solid #4285f4; /* Google blue left border */
+    background-color: #ffffff;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.search-result:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+}
+
+.search-result h2 a {
+    color: #1a0dab; /* Google link blue */
+}
+
+.search-result .url {
+    color: #006621; /* Google URL green */
+}
+
+.no-results {
+    text-align: center;
+    color: #888;
+    font-size: 18px;
+    padding: 20px;
+}
