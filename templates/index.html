@@ -20,7 +20,12 @@
         <div id="search-results">
             <!-- Search results will be displayed here -->
         </div>
+        <div id="pagination" class="pagination">
+            <button id="prev-page" class="arrow-button" disabled><</button>
+            <span id="page-info">Page 1</span>
+            <button id="next-page" class="arrow-button" disabled>></button>
+        </div>
     </div>
-    <script src="{{ url_for('static', filename='script.js') }}"></script>
+    <script src="{{ url_for('static', filename='script.js') }}"></script>c
 </body>
 </html>

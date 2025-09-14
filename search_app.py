@@ -19,25 +19,50 @@ def get_db_connection():
 def index():
     return render_template('index.html')
 
+import math
+
 @app.route('/search')
 def search():
     query = request.args.get('query', '')
+    page = request.args.get('page', 1, type=int)
+    per_page = request.args.get('per_page', 10, type=int)
+
     if not query:
-        return jsonify([])
+        return jsonify({"results": [], "current_page": 1, "total_pages": 1})
 
     conn = get_db_connection()
     cursor = conn.cursor()
 
-    # Basic full-text search using LIKE.
-    # For more advanced search, consider integrating with a dedicated search engine (e.g., Whoosh, Elasticsearch)
-    # or SQLite's FTS5 extension.
     search_term = f"%{query}%"
+
+    # First, get the total count of matching results
+    count_cursor = conn.cursor()
+    count_cursor.execute('''
+        SELECT COUNT(*)
+        FROM pages
+        WHERE title LIKE ? OR body LIKE ? OR description LIKE ? OR keywords LIKE ?
+    ''', (search_term, search_term, search_term, search_term))
+    total_results = count_cursor.fetchone()[0]
+
+    # Calculate total pages
+    total_pages = math.ceil(total_results / per_page) if total_results > 0 else 1
+
+    # Ensure current page is within valid range
+    if page < 1:
+        page = 1
+    elif page > total_pages:
+        page = total_pages
+
+    # Calculate offset for pagination
+    offset = (page - 1) * per_page
+
+    # Fetch results for the current page
     cursor.execute('''
         SELECT url, title, body, description, keywords
         FROM pages
         WHERE title LIKE ? OR body LIKE ? OR description LIKE ? OR keywords LIKE ?
-        LIMIT 50
-    ''', (search_term, search_term, search_term, search_term))
+        LIMIT ? OFFSET ?
+    ''', (search_term, search_term, search_term, search_term, per_page, offset))
 
     results = cursor.fetchall()
     conn.close()
@@ -47,7 +72,11 @@ def search():
     for row in results:
         results_list.append(dict(row))
     
-    return jsonify(results_list)
+    return jsonify({
+        "results": results_list,
+        "current_page": page,
+        "total_pages": total_pages
+    })
 
 if __name__ == '__main__':
     app.run(debug=True)

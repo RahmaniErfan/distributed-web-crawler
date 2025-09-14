@@ -1,18 +1,40 @@
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    overflow: hidden; /* Prevent body from scrolling */
+}
+
 body {
     font-family: Arial, sans-serif;
-    margin: 0;
-    padding: 40px; /* Increased padding for more space */
     background-color: #ffffff; /* White background */
     color: #202124; /* Dark grey text */
+    display: flex; /* Use flexbox to center content vertically */
+    justify-content: center; /* Center horizontally */
+    align-items: center; /* Center vertically */
 }
 
 .container {
-    max-width: 100%; /* Take full page width */
-    margin: 0 auto; /* Center with no vertical margin */
+    max-width: 100%;
+    margin: 0 auto;
     background-color: #fff;
     padding: 30px;
     border-radius: 8px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* More pronounced shadow */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 100%; /* Allow container to take full height of body */
+    max-height: calc(100vh - 60px); /* Account for container's own padding */
+    transform: translateY(0) scale(1); /* Explicit initial transform */
+    transition: all 0.7s ease-in-out, transform 0.7s ease-in-out; /* Transition all relevant properties including transform */
+}
+
+.container.search-active {
+    /* Active state: align to top with transform for smooth animation */
+    justify-content: flex-start; /* Keep for internal alignment of content */
+    padding-top: 15px; /* Reduce padding to move content up */
+    transform: translateY(-35px) scale(0.95); /* Move up by 35px and subtly zoom out, adjusted for hidden header */
+    max-height: calc(100vh - 60px); /* Keep max-height consistent */
 }
 
 .header {
@@ -20,20 +42,40 @@ body {
     align-items: center;
     justify-content: center;
     margin-bottom: 30px;
+    transition: margin-bottom 0.7s ease-in-out, font-size 0.7s ease-in-out, transform 0.7s ease-in-out, opacity 0.7s ease-in-out, max-height 0.7s ease-in-out;
 }
 
+.header.search-active {
+    opacity: 0;
+    max-height: 0; /* Collapse the header's height */
+    overflow: hidden; /* Hide any overflowing content during collapse */
+    margin-bottom: 0; /* Ensure no margin pushes content down */
+}
 
 .header h1 {
     margin: 0;
-    color: #4285f4; /* Google blue */
-    font-size: 48px; /* Larger title */
+    color: #4285f4;
+    font-size: 48px;
     text-align: center;
     margin-bottom: 40px;
+    transition: font-size 0.7s ease-in-out, margin-bottom 0.7s ease-in-out;
+}
+
+.header.search-active h1 {
+    font-size: 32px;
+    margin-bottom: 10px;
 }
 
 .search-box {
     display: flex;
     margin-bottom: 30px;
+    width: 100%; /* Ensure it takes full width for centering */
+    justify-content: center; /* Center the search input wrapper */
+    transition: margin-bottom 0.7s ease-in-out, transform 0.7s ease-in-out;
+}
+
+.search-box.search-active {
+    margin-bottom: 20px;
 }
 
 .search-input-wrapper {
@@ -41,11 +83,16 @@ body {
     align-items: center;
     border: 1px solid #dfe1e5;
     border-radius: 24px;
-    height: 60px; /* Increased height to match input and provide more visual space */
-    margin: 0 auto; /* Center the search box */
-    max-width: 100%; /* Take full width of container */
+    height: 60px;
+    width: 600px; /* Fixed width for the search bar */
+    max-width: 90%; /* Ensure it's responsive */
     box-shadow: none;
-    transition: box-shadow 0.3s ease;
+    transition: box-shadow 0.3s ease, width 0.7s ease-in-out, height 0.7s ease-in-out;
+}
+
+.search-input-wrapper.search-active {
+    width: 700px; /* Wider when active */
+    height: 48px; /* Smaller when active */
 }
 
 .search-input-wrapper:hover {
@@ -78,6 +125,38 @@ body {
 /* Removed search button styling as it's no longer present */
 
 /* Removed icon button styling as it's no longer present */
+
+#search-results {
+    width: 100%;
+    max-width: 700px; /* Match search bar width */
+    margin-top: 20px;
+    opacity: 0; /* Start hidden */
+    height: 0; /* Start with no height */
+    overflow: hidden; /* Hide overflowing content */
+    transition: opacity 0.5s ease-in-out, height 0.5s ease-in-out, margin-top 0.5s ease-in-out; /* Transition these properties */
+    position: relative; /* For pseudo-element positioning */
+    z-index: 1; /* Ensure content is above pseudo-element */
+}
+
+#search-results::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 100px; /* Increased height for a more dramatic fade effect */
+    background: linear-gradient(to top, rgba(255,255,255,1) 20%, rgba(255,255,255,0)); /* Adjusted gradient for a stronger fade */
+    pointer-events: none; /* Allow interaction with content underneath */
+    z-index: 2; /* Ensure fade is above results but below scrollbar */
+}
+
+.container.search-active #search-results {
+    opacity: 1; /* Become visible */
+    height: auto; /* Allow content to define height */
+    max-height: calc(100vh - 233px); /* Adjusted to prevent body scroll */
+    overflow-y: auto; /* Enable scrolling for results */
+    margin-top: 20px; /* Ensure margin is applied when visible */
+}
 
 .search-result {
     background-color: #f9f9f9;
@@ -145,4 +224,54 @@ body {
     color: #888;
     font-size: 18px;
     padding: 20px;
+}
+
+#search-results.fade-out {
+    opacity: 0;
+    transition: opacity 0.3s ease-out;
+}
+
+/* Pagination styles */
+.pagination {
+    display: none; /* Initially hidden, shown by JavaScript when needed */
+    justify-content: center;
+    align-items: center;
+    margin-top: 20px;
+    gap: 10px;
+}
+
+.pagination .arrow-button {
+    padding: 0 8px; /* Minimal horizontal padding */
+    border: none; /* No border */
+    border-radius: 0; /* No border-radius */
+    background-color: transparent; /* No background color */
+    color: #70757a; /* Google's standard grey for icons/text */
+    cursor: pointer;
+    font-size: 24px; /* Standard arrow size */
+    font-weight: normal; /* Normal weight */
+    box-shadow: none; /* No shadow */
+    transition: none; /* No transition for hover effects */
+    width: auto; /* Auto width */
+    height: auto; /* Auto height */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    line-height: 1;
+}
+
+.pagination .arrow-button:disabled {
+    opacity: 0; /* Hide completely when disabled */
+    cursor: not-allowed;
+}
+
+.pagination .arrow-button:not(:disabled):hover {
+    /* No hover effects as requested */
+    color: #70757a; /* Keep same color on hover */
+    transform: none; /* No transform on hover */
+}
+
+
+#page-info {
+    font-size: 14px;
+    color: #5f6368;
 }
