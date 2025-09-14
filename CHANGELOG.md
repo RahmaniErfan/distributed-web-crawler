@@ -30,3 +30,8 @@ Initial commits were accidentally deleted, please refer to initial changes in th
 -   **`redis-cli: command not found`**: Resolved by updating `Dockerfile` to use `python:3.9-slim-bullseye` and installing `redis-tools`.
 -   **`Unknown command: crawl`**: Resolved by ensuring Scrapy commands are executed from the correct project context within Docker Compose.
 -   **`ModuleNotFoundError: No module named 'search_engine_crawler'`**: Resolved by adding `__init__.py` to `search_engine_crawler/` and explicitly setting `PYTHONPATH` in `docker-compose.yml`.
+-   **Crawler Premature Closing & Skipped Relative URLs**:
+    -   Modified `web_spider.py` to correctly handle relative URLs, preventing them from being skipped.
+    -   Updated `start_urls.txt` with an expanded list of seed URLs.
+    -   Updated `DEFAULT_ALLOWED_DOMAINS` in `search_engine_crawler/constants.py` to include all unique domains from the expanded `start_urls.txt`.
+    -   Increased `DEPTH_LIMIT` in `search_engine_crawler/settings.py` from 5 to 10 to prevent crawlers from closing prematurely.

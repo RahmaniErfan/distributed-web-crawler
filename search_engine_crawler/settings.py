@@ -96,7 +96,7 @@ PLAYWRIGHT_ENABLED = True # Global switch to enable/disable Playwright
 PLAYWRIGHT_MAX_RETRIES = 1 # Max retries for a request with Playwright if it fails
 
 # Crawling depth limit
-DEPTH_LIMIT = 5 # Increased limit to allow deeper crawling
+DEPTH_LIMIT = 10 # Increased limit to allow deeper crawling and prevent premature closing
 
 # Enable or disable extensions
 # See https://docs.scrapy.org/en/latest/topics/extensions.html

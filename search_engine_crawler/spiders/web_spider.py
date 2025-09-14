@@ -109,16 +109,22 @@ class WebSpider(RedisSpider): # Changed base class to RedisSpider
             return
 
         for href in response.css('a::attr(href)').getall():
-            parsed_url = urlparse(href)
-            # Filter out non-HTTP/HTTPS links (e.g., mailto:, javascript:)
-            if parsed_url.scheme in ['http', 'https']:
-                # Pass playwright_used meta to ensure subsequent requests from this page
-                # also consider conditional playwright usage
-                meta = {
-                    'depth': next_depth,
-                    'playwright_used': response.meta.get('playwright_used', False),
-                    'playwright_retries': 0 # Reset retries for new requests
-                }
-                yield response.follow(href, self.parse, meta=meta)
+            # Pass playwright_used meta to ensure subsequent requests from this page
+            # also consider conditional playwright usage
+            meta = {
+                'depth': next_depth,
+                'playwright_used': response.meta.get('playwright_used', False),
+                'playwright_retries': 0 # Reset retries for new requests
+            }
+
+            # Check if the href is an absolute URL
+            if urlparse(href).scheme:
+                # If it's an absolute URL, filter out non-HTTP/HTTPS links
+                parsed_url = urlparse(href)
+                if parsed_url.scheme in ['http', 'https']:
+                    yield response.follow(href, self.parse, meta=meta)
+                else:
+                    self.logger.debug(f"Skipping non-HTTP/HTTPS link with scheme: {parsed_url.scheme} for URL: {href}")
             else:
-                self.logger.debug(f"Skipping non-HTTP/HTTPS link with scheme: {parsed_url.scheme} for URL: {href}")
+                # If it's a relative URL, follow it directly
+                yield response.follow(href, self.parse, meta=meta)
