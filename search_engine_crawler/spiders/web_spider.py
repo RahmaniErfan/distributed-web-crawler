@@ -1,44 +1,36 @@
 import scrapy
-from scrapy.spiders import SitemapSpider
+from scrapy_redis.spiders import RedisSpider # Import RedisSpider
 from scrapy.utils.project import get_project_settings
 from ..items import SearchEngineCrawlerItem
-from ..constants import DEFAULT_START_URLS, DEFAULT_ALLOWED_DOMAINS
+from ..constants import DEFAULT_ALLOWED_DOMAINS # Removed DEFAULT_START_URLS
 from urllib.parse import urlparse # Import urlparse
 
-class WebSpider(SitemapSpider):
+class WebSpider(RedisSpider): # Changed base class to RedisSpider
     name = 'web_spider'
     
-    allowed_domains = []
-    start_urls = []
-    sitemap_urls = []
-    
+    # allowed_domains will still be used for filtering, but start_urls and sitemap_urls are managed by Redis
+    allowed_domains = list(DEFAULT_ALLOWED_DOMAINS) # Initialize with default allowed domains
+
     settings = get_project_settings()
     PLAYWRIGHT_ENABLED = settings.getbool('PLAYWRIGHT_ENABLED', True)
     PLAYWRIGHT_MAX_RETRIES = settings.getint('PLAYWRIGHT_MAX_RETRIES', 1)
     DEPTH_LIMIT = settings.getint('DEPTH_LIMIT', 0) # 0 means no limit
 
+    # RedisSpider automatically handles start_urls from Redis.
+    # The key for Redis will be f"{self.name}:start_urls" (e.g., "web_spider:start_urls")
+    # You can push URLs to this list in Redis.
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        
-        # Initialize with default values from constants.py
-        self.start_urls = list(DEFAULT_START_URLS)
-        self.allowed_domains = list(DEFAULT_ALLOWED_DOMAINS)
-        self.sitemap_urls = [] # Sitemap URLs don't have a default
+        # No need to initialize start_urls or sitemap_urls here, RedisSpider handles it.
+        # If you still want to allow overriding allowed_domains via command line, you can add:
+        if 'allowed_domains' in kwargs:
+            self.allowed_domains = kwargs.get('allowed_domains').split(',')
 
-        # Only sitemap_urls can be overridden via command-line arguments
-        if 'sitemap_urls' in kwargs:
-            self.sitemap_urls = kwargs.get('sitemap_urls').split(',')
-
-    def start_requests(self):
-        # Initial requests without Playwright, depth 0
-        if self.start_urls:
-            for url in self.start_urls:
-                yield scrapy.Request(url, self.parse, meta={'depth': 0})
-        elif self.sitemap_urls:
-            for sitemap_url in self.sitemap_urls:
-                yield scrapy.Request(sitemap_url, self._parse_sitemap, meta={'depth': 0})
-        else:
-            self.logger.warning("No start_urls or sitemap_urls provided. Spider will not start.")
+    # RedisSpider provides its own start_requests method that pulls URLs from Redis.
+    # We will override it to add initial depth meta.
+    def make_requests_from_url(self, url):
+        return scrapy.Request(url, self.parse, meta={'depth': 0})
 
     async def parse(self, response):
         current_depth = response.meta.get('depth', 0)

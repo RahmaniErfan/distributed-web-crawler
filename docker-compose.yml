@@ -1,0 +1,39 @@
+services:
+  redis:
+    image: "redis:6-alpine"
+    hostname: redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+
+  init_urls:
+    build: .
+    command: /bin/bash -c "./init_redis_urls.sh"
+    depends_on:
+      - redis
+    environment:
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+    # Ensure this service runs and completes before the crawler starts
+    # restart: "no" # This ensures it doesn't keep running after pushing URLs
+
+  crawler:
+    build: .
+    command: scrapy crawl web_spider -s REDIS_HOST=redis -s REDIS_PORT=6379
+    depends_on:
+      - redis
+      - init_urls # Ensure init_urls runs before crawler
+    environment:
+      # Ensure Scrapy-Redis connects to the Redis service by its hostname
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      SCRAPY_SETTINGS_MODULE: search_engine_crawler.settings
+      PYTHONPATH: /app
+    # You can scale this service to run multiple crawlers
+    # For example, `docker-compose up --scale crawler=3`
+    volumes:
+      - ./scraped_data.db:/app/scraped_data.db # Persist SQLite DB outside container
+
+volumes:
+  redis_data:

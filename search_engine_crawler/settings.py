@@ -21,6 +21,22 @@ ADDONS = {}
 # Obey robots.txt rules
 ROBOTSTXT_OBEY = True
 
+# Scrapy-Redis settings
+# Enables scheduling storing requests queue in Redis.
+SCHEDULER = "scrapy_redis.scheduler.Scheduler"
+
+# Ensure all spiders share a common duplication filter through Redis.
+DUPEFILTER_CLASS = "scrapy_redis.dupefilter.RFPDupeFilter"
+
+# Don't cleanup Redis queues, allows to pause/resume crawls.
+SCHEDULER_PERSIST = True
+
+# Default Redis connection settings.
+# Default Redis connection settings.
+# These will be overridden by environment variables in Docker Compose
+REDIS_HOST = 'redis' 
+REDIS_PORT = 6379
+
 # Concurrency and throttling settings
 CONCURRENT_REQUESTS = 32 # Increased for better performance, adjust as needed
 CONCURRENT_REQUESTS_PER_DOMAIN = 8 # Allow more concurrent requests per domain
@@ -95,6 +111,7 @@ EXTENSIONS = {
 # See https://docs.scrapy.org/en/latest/topics/item-pipeline.html
 ITEM_PIPELINES = {
     "search_engine_crawler.pipelines.SearchEngineCrawlerPipeline": 300,
+    "scrapy_redis.pipelines.RedisPipeline": 400, # Add RedisPipeline to store items in Redis
 }
 
 # Enable and configure the AutoThrottle extension (disabled by default)
@@ -131,7 +148,7 @@ DOWNLOADER_MIDDLEWARES.update({
 })
 
 # Logging settings
-LOG_LEVEL = 'INFO' # DEBUG, INFO, WARNING, ERROR, CRITICAL
+LOG_LEVEL = 'DEBUG' # DEBUG, INFO, WARNING, ERROR, CRITICAL
 # LOG_FILE = 'scrapy.log' # Uncomment to enable logging to a file
 
 # Set settings whose default value is deprecated to a future-proof value

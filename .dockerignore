@@ -1,0 +1,12 @@
+.git
+.venv
+__pycache__/
+*.pyc
+*.log
+scraped_data.db
+node_modules/
+static/
+templates/
+README.md
+CHANGELOG.md
+scrapy.cfg
