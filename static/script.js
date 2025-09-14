@@ -53,14 +53,18 @@ document.addEventListener('DOMContentLoaded', () => {
         void container.offsetHeight;
 
         // Start fading out current results
-        searchResultsDiv.classList.add('fade-out');
+        searchResultsDiv.style.opacity = '0';
+        searchResultsDiv.style.transition = 'opacity 0.3s ease-out'; // Ensure transition is set
 
-        // Show "Searching..." message while fading out previous results
+        // Show "Searching..." message after a short delay to allow fade-out to begin
         setTimeout(() => {
             searchResultsDiv.innerHTML = '<p class="no-results">Searching...</p>';
+            // Temporarily remove transition for instant content change, then re-add for fade-in
+            searchResultsDiv.style.transition = 'none';
+            searchResultsDiv.style.opacity = '0'; // Keep it hidden while content is being prepared
         }, 150); // Half of the fade-out transition duration
 
-        // After fade-out completes, fetch new results and fade them in
+        // After content is prepared, fetch new results and fade them in
         setTimeout(async () => {
             try {
                 const response = await fetch(`/search?query=${encodeURIComponent(query)}&page=${currentPage}&per_page=${resultsPerPage}`);
@@ -101,7 +105,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 totalPages = 1;
                 updatePaginationUI();
             } finally {
-                searchResultsDiv.classList.remove('fade-out'); // Fade in new content
+                // Re-enable transition and fade in new content
+                searchResultsDiv.style.transition = 'opacity 0.3s ease-in';
+                searchResultsDiv.style.opacity = '1';
             }
         }, 300); // Wait for fade-out to complete before showing new content
     };

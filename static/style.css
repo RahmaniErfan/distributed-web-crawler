@@ -138,17 +138,6 @@ body {
     z-index: 1; /* Ensure content is above pseudo-element */
 }
 
-#search-results::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    height: 100px; /* Increased height for a more dramatic fade effect */
-    background: linear-gradient(to top, rgba(255,255,255,1) 20%, rgba(255,255,255,0)); /* Adjusted gradient for a stronger fade */
-    pointer-events: none; /* Allow interaction with content underneath */
-    z-index: 2; /* Ensure fade is above results but below scrollbar */
-}
 
 .container.search-active #search-results {
     opacity: 1; /* Become visible */
@@ -226,10 +215,6 @@ body {
     padding: 20px;
 }
 
-#search-results.fade-out {
-    opacity: 0;
-    transition: opacity 0.3s ease-out;
-}
 
 /* Pagination styles */
 .pagination {
