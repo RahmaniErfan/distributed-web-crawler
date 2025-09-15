@@ -1,6 +1,6 @@
 # Search Engine Crawler
 
-This project is a web crawler built using Scrapy, designed to extract information from specified websites. It utilizes `scrapy-playwright` for handling JavaScript-rendered content, ensuring comprehensive data extraction from modern web pages.
+This project is a distributed, depth-first web scraper built using Scrapy, designed to extract information from specified websites. It utilizes `scrapy-playwright` for handling JavaScript-rendered content, ensuring comprehensive data extraction from modern web pages. The crawler is designed for distributed operation, allowing multiple instances to work concurrently and efficiently.
 
 ## Setup
 
