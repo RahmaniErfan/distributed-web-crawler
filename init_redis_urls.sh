@@ -11,8 +11,7 @@ echo "Redis is ready."
 echo "Pushing start URLs to Redis..."
 while IFS= read -r url; do
   if [ -n "$url" ]; then # Check if URL is not empty
-    json_url="{\"url\": \"$url\"}"
-    redis-cli -h "$REDIS_HOST" -p "$REDIS_PORT" LPUSH web_spider:start_urls "$json_url"
+    redis-cli -h "$REDIS_HOST" -p "$REDIS_PORT" LPUSH web_spider:start_urls "$url"
     echo "Pushed: $url"
   fi
 done < start_urls.txt
