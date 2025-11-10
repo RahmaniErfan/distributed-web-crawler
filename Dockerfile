@@ -15,6 +15,7 @@ RUN apt-get update && apt-get install -y redis-tools && rm -rf /var/lib/apt/list
 
 # Copy the current directory contents into the container at /app
 COPY . /app
+RUN sed -i 's/\r$//' init_redis_urls.sh
 
 # Set environment variables for Scrapy
 ENV PYTHONUNBUFFERED 1
